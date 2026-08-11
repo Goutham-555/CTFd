@@ -28,6 +28,13 @@ services:
         default:
         internal:
 
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token eyJhIjoiYjJmOTQzNTY4ZjkxM2JkMTViMzk2NzNjN2MwOGEwNDYiLCJ0IjoiNmI2MGIyZDEtNzQ4NC00M2FjLWJkNzAtYmYzY2JkNmZmMDcwIiwicyI6Ik9ETXhaakEwT0RZdE5tVm1aQzAwWm1WaExXSmpObVF0Tm1FM05HTmpZalptT0RjNCJ9
+    networks:
+      - default
+
   # TODO: CTFd 4.0 Migrate to named volumes. Users will likely need to manually migrate existing files
   permissions:
     image: alpine:3.23
