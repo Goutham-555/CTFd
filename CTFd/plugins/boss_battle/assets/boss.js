@@ -354,10 +354,25 @@
       });
   }
 
+  var currentIntervalMs = 4000;
+
   function startPolling(intervalMs) {
+    if (intervalMs) currentIntervalMs = intervalMs;
     if (pollingInterval) clearInterval(pollingInterval);
-    pollingInterval = setInterval(fetchBossState, intervalMs || 4000);
+    pollingInterval = setInterval(fetchBossState, currentIntervalMs);
   }
+
+  // Optimization: Slow down polling when the tab is inactive
+  document.addEventListener("visibilitychange", function() {
+    if (document.hidden) {
+      // Backoff to 30 seconds when tab is hidden
+      startPolling(30000);
+    } else {
+      // Resume normal 4-second polling and immediately fetch the latest state
+      fetchBossState();
+      startPolling(4000);
+    }
+  });
 
   // =========================================================================
   // ADMIN INTERACTIVE CONTROLS

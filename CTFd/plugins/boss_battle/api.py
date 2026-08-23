@@ -9,7 +9,10 @@ from CTFd.utils.user import get_current_user
 boss_api_bp = Blueprint("boss_api", __name__, url_prefix="/api/boss")
 
 
+from CTFd.cache import cache
+
 @boss_api_bp.route("/state", methods=["GET"])
+@cache.cached(timeout=10, key_prefix="boss_api_state")
 @authed_only
 def get_boss_state():
     """

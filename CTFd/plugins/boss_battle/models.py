@@ -109,6 +109,7 @@ class BossState(db.Model):
                 defeated_occurred = True
 
         db.session.commit()
+        clear_boss_state_cache()
 
         return {
             "damage_applied": amount,
@@ -135,11 +136,18 @@ class BossState(db.Model):
         self.last_hit_at = None
         self.is_active = True
         db.session.commit()
+        clear_boss_state_cache()
 
     def to_dict(self) -> dict:
         """
         Serializes the model into a dictionary for API/Template consumption.
+        Calculates cumulative properties (total_max_hp, total_current_hp).
         """
+        from CTFd.cache import cache
+        data = cache.get("boss_state_dict")
+        if data:
+            return data
+
         # Calculate remaining total health across all 3 phases
         remaining_total_hp = 0
         for p in range(self.phase, 4):
@@ -148,7 +156,7 @@ class BossState(db.Model):
             else:
                 remaining_total_hp += PHASE_CONFIG[p]["max_hp"]
 
-        return {
+        data = {
             "id": self.id,
             "phase": self.phase,
             "name": self.name,
@@ -162,3 +170,12 @@ class BossState(db.Model):
             "last_hit_at": self.last_hit_at.isoformat() if self.last_hit_at else None,
             "is_active": self.is_active,
         }
+        
+        # Cache for 10 seconds. Invalidation happens on damage.
+        cache.set("boss_state_dict", data, timeout=10)
+        return data
+
+def clear_boss_state_cache():
+    from CTFd.cache import cache
+    cache.delete("boss_state_dict")
+    cache.delete("boss_api_state")
