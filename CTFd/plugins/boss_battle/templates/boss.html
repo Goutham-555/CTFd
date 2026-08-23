@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="boss-arena" id="boss-arena" data-boss-phase="{{ boss.phase }}">
+
+  {# --- Header: Phase label + Boss name --- #}
+  <div class="boss-arena__header">
+    <div class="boss-arena__phase-label">Phase {{ boss.phase }}</div>
+    <h1 class="boss-arena__name">{{ boss.name }}</h1>
+  </div>
+
+  {# --- Boss sprite container --- #}
+  {# 256x256 sprite viewport matching design documents #}
+  <div class="boss-arena__sprite-container">
+    <div class="boss-arena__sprite-placeholder">&#9876;</div>
+    {# Phase 7: Sprite sheet element will be injected here by boss-sprites.js #}
+    {# Phase transition cutscene: white flash overlay #}
+    <div class="boss-arena__transition-overlay" id="boss-transition-overlay"></div>
+  </div>
+  <div class="boss-arena__state-label">{{ boss.state }}</div>
+
+  {# --- HP Bar --- #}
+  {% set hp_percent = ((boss.current_hp / boss.max_hp) * 100) if boss.max_hp > 0 else 0 %}
+  <div class="boss-arena__hp-section">
+    <div class="boss-arena__hp-header">
+      <span class="boss-arena__hp-label">Boss HP</span>
+      <span class="boss-arena__hp-numbers">{{ "{:,}".format(boss.current_hp) }} / {{ "{:,}".format(boss.max_hp) }}</span>
+    </div>
+    <div class="boss-hp-bar">
+      <div class="boss-hp-bar__fill" style="width: {{ hp_percent }}%"></div>
+    </div>
+  </div>
+
+  {# --- Phase indicator dots --- #}
+  <div class="boss-arena__phases">
+    {% for p in [1, 2, 3] %}
+      <div class="boss-arena__phase-dot">
+        <div class="boss-arena__phase-dot-circle {% if p == boss.phase %}boss-arena__phase-dot-circle--active{% elif p < boss.phase %}boss-arena__phase-dot-circle--completed{% endif %}"></div>
+        <span class="boss-arena__phase-dot-label">Phase {{ p }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if boss.last_hit_by %}
+  <div class="text-center text-muted mt-3">
+    <small>Last damaged by: <strong>{{ boss.last_hit_by }}</strong></small>
+  </div>
+  {% endif %}
+
+  {# --- Admin Interactive Control Panel --- #}
+  {% if is_admin() %}
+  <div class="card bg-dark border-secondary mt-5 p-3 text-center">
+    <h6 class="text-uppercase text-muted" style="letter-spacing: 1px;">Admin Boss Testing Controls</h6>
+    <div class="d-flex flex-wrap justify-content-center gap-2 mt-2">
+      <button class="btn btn-sm btn-outline-danger" onclick="window.BossBattle.adminDamage(1000)">-1,000 HP</button>
+      <button class="btn btn-sm btn-outline-danger" onclick="window.BossBattle.adminDamage(5000)">-5,000 HP</button>
+      <button class="btn btn-sm btn-outline-warning" onclick="window.BossBattle.adminDamage(15000)">Trigger Next Phase</button>
+      <button class="btn btn-sm btn-outline-info" onclick="window.BossBattle.adminReset()">Reset Boss</button>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+<script type="text/javascript">
+  window.INITIAL_BOSS_STATE = {{ boss | tojson }};
+</script>
+{% endblock %}

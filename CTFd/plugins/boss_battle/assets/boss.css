@@ -1,0 +1,409 @@
+/* ==========================================================================
+   Boss Battle Plugin — Styles
+   Two components:
+   1. .boss-arena    — Full /boss page
+   2. .boss-widget   — Persistent mini-widget on all pages
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   CSS Custom Properties — Phase-specific theme colors from design docs
+   Phase 1: Red/Dark   Phase 2: Purple   Phase 3: Gold
+   -------------------------------------------------------------------------- */
+:root {
+  --boss-phase1-color: #c0392b;
+  --boss-phase1-glow: rgba(192, 57, 43, 0.4);
+  --boss-phase2-color: #8e44ad;
+  --boss-phase2-glow: rgba(142, 68, 173, 0.4);
+  --boss-phase3-color: #d4a017;
+  --boss-phase3-glow: rgba(212, 160, 23, 0.4);
+  --boss-bg-dark: #1a1a2e;
+  --boss-bg-card: #16213e;
+  --boss-text: #e0e0e0;
+  --boss-text-muted: #888;
+  --boss-hp-bg: #2d2d2d;
+}
+
+/* ==========================================================================
+   1. FULL BOSS PAGE — .boss-arena
+   ========================================================================== */
+
+.boss-arena {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  color: var(--boss-text);
+}
+
+/* Phase title bar */
+.boss-arena__header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.boss-arena__phase-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--boss-text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.boss-arena__name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Boss sprite container */
+.boss-arena__sprite-container {
+  position: relative;
+  width: 256px;
+  height: 256px;
+  margin: 1.5rem auto;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--boss-bg-dark);
+  border: 2px solid #333;
+}
+
+/* Sprite sheet element — positioned inside the container */
+.boss-arena__sprite-sheet {
+  width: 256px;
+  height: 256px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.boss-arena__sprite {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+/* Placeholder when no sprite is loaded */
+.boss-arena__sprite-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  color: #444;
+  transition: font-size 0.2s;
+}
+
+/* Screen shake effect — applied to the container on heavy hits */
+.boss-arena__sprite-container--shake {
+  animation: boss-screen-shake 0.3s ease-out;
+}
+
+@keyframes boss-screen-shake {
+  0%   { transform: translate(0, 0); }
+  10%  { transform: translate(-4px, 2px); }
+  20%  { transform: translate(4px, -2px); }
+  30%  { transform: translate(-3px, -3px); }
+  40%  { transform: translate(3px, 3px); }
+  50%  { transform: translate(-2px, 1px); }
+  60%  { transform: translate(2px, -1px); }
+  70%  { transform: translate(-1px, 2px); }
+  80%  { transform: translate(1px, -1px); }
+  90%  { transform: translate(-1px, 0); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Phase transition cutscene overlay — white flash + fade */
+.boss-arena__transition-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+  border-radius: 8px;
+}
+
+.boss-arena__transition-overlay--active {
+  animation: boss-transition-flash 2s ease-in-out forwards;
+}
+
+@keyframes boss-transition-flash {
+  0%   { opacity: 0; }
+  20%  { opacity: 0.9; }
+  50%  { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+
+/* Animation state label */
+.boss-arena__state-label {
+  text-align: center;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--boss-text-muted);
+  margin-top: 0.5rem;
+}
+
+/* HP Bar */
+.boss-arena__hp-section {
+  margin: 1.5rem 0;
+}
+
+.boss-arena__hp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.boss-arena__hp-label {
+  font-weight: 600;
+}
+
+.boss-arena__hp-numbers {
+  font-family: monospace;
+  color: var(--boss-text-muted);
+}
+
+.boss-hp-bar {
+  width: 100%;
+  height: 24px;
+  background: var(--boss-hp-bg);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.boss-hp-bar__fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s ease-in-out, background-color 0.3s;
+  position: relative;
+}
+
+/* HP bar shimmer effect */
+.boss-hp-bar__fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  border-radius: 4px 4px 0 0;
+}
+
+/* Phase dots */
+.boss-arena__phases {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.boss-arena__phase-dot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.boss-arena__phase-dot-circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #555;
+  background: transparent;
+  transition: all 0.3s;
+}
+
+.boss-arena__phase-dot-circle--active {
+  border-color: currentColor;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.boss-arena__phase-dot-circle--completed {
+  border-color: #555;
+  background: #555;
+}
+
+.boss-arena__phase-dot-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--boss-text-muted);
+}
+
+/* Hit flash overlay */
+.boss-arena__sprite-container--hit {
+  animation: boss-hit-flash 0.15s ease-out 2;
+}
+
+@keyframes boss-hit-flash {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(2.5) saturate(0); }
+  100% { filter: brightness(1); }
+}
+
+/* Defeated pulse */
+.boss-arena__sprite-container--defeated {
+  animation: boss-defeated 1.5s ease-in-out forwards;
+}
+
+@keyframes boss-defeated {
+  0% { opacity: 1; filter: none; }
+  50% { opacity: 0.5; filter: grayscale(1); }
+  100% { opacity: 0.2; filter: grayscale(1); }
+}
+
+/* Phase transition glow */
+.boss-arena__sprite-container--transition {
+  animation: boss-phase-transition 2s ease-in-out;
+}
+
+@keyframes boss-phase-transition {
+  0% { filter: brightness(1); box-shadow: none; }
+  30% { filter: brightness(3); box-shadow: 0 0 30px rgba(255, 255, 255, 0.8); }
+  60% { filter: brightness(3); box-shadow: 0 0 30px rgba(255, 255, 255, 0.8); }
+  100% { filter: brightness(1); box-shadow: none; }
+}
+
+/* ==========================================================================
+   2. MINI WIDGET — .boss-widget
+   Persistent bottom-right corner widget visible on all pages.
+   ========================================================================== */
+
+.boss-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 280px;
+  background: var(--boss-bg-card);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--boss-text);
+  z-index: 1050;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  font-size: 0.85rem;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.boss-widget--hidden {
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+}
+
+/* Widget header with boss name and collapse toggle */
+.boss-widget__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.boss-widget__title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.boss-widget__phase {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--boss-text-muted);
+}
+
+.boss-widget__toggle {
+  background: none;
+  border: none;
+  color: var(--boss-text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+/* Widget body — collapsible */
+.boss-widget__body {
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  max-height: 200px;
+}
+
+.boss-widget__body--collapsed {
+  max-height: 0;
+}
+
+/* Widget HP bar — smaller version */
+.boss-widget .boss-hp-bar {
+  height: 14px;
+  margin-bottom: 6px;
+}
+
+.boss-widget__hp-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--boss-text-muted);
+  font-family: monospace;
+}
+
+.boss-widget__link {
+  display: block;
+  text-align: center;
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: var(--boss-phase1-color);
+  text-decoration: none;
+}
+
+.boss-widget__link:hover {
+  text-decoration: underline;
+}
+
+/* Don't show the widget on the /boss page itself */
+body.boss-page-active .boss-widget {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Phase color application — set via data-phase attribute
+   -------------------------------------------------------------------------- */
+[data-boss-phase="1"] .boss-hp-bar__fill { background: var(--boss-phase1-color); }
+[data-boss-phase="1"] .boss-arena__name { color: var(--boss-phase1-color); }
+[data-boss-phase="1"] .boss-arena__phase-dot-circle--active { color: var(--boss-phase1-color); }
+[data-boss-phase="1"] .boss-widget__title { color: var(--boss-phase1-color); }
+[data-boss-phase="1"] .boss-widget__link { color: var(--boss-phase1-color); }
+[data-boss-phase="1"] .boss-arena__sprite-container { border-color: var(--boss-phase1-color); }
+
+[data-boss-phase="2"] .boss-hp-bar__fill { background: var(--boss-phase2-color); }
+[data-boss-phase="2"] .boss-arena__name { color: var(--boss-phase2-color); }
+[data-boss-phase="2"] .boss-arena__phase-dot-circle--active { color: var(--boss-phase2-color); }
+[data-boss-phase="2"] .boss-widget__title { color: var(--boss-phase2-color); }
+[data-boss-phase="2"] .boss-widget__link { color: var(--boss-phase2-color); }
+[data-boss-phase="2"] .boss-arena__sprite-container { border-color: var(--boss-phase2-color); }
+
+[data-boss-phase="3"] .boss-hp-bar__fill { background: var(--boss-phase3-color); }
+[data-boss-phase="3"] .boss-arena__name { color: var(--boss-phase3-color); }
+[data-boss-phase="3"] .boss-arena__phase-dot-circle--active { color: var(--boss-phase3-color); }
+[data-boss-phase="3"] .boss-widget__title { color: var(--boss-phase3-color); }
+[data-boss-phase="3"] .boss-widget__link { color: var(--boss-phase3-color); }
+[data-boss-phase="3"] .boss-arena__sprite-container { border-color: var(--boss-phase3-color); }
