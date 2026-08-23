@@ -298,7 +298,15 @@
   z-index: 1050;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   font-size: 0.85rem;
-  transition: opacity 0.3s, transform 0.3s;
+  transition: opacity 0.3s;
+  user-select: none;
+}
+
+.boss-widget--dragging {
+  opacity: 0.9;
+  cursor: grabbing !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+  transition: none !important;
 }
 
 .boss-widget--hidden {
@@ -313,7 +321,11 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
-  cursor: pointer;
+  cursor: grab;
+}
+
+.boss-widget__header:active {
+  cursor: grabbing;
 }
 
 .boss-widget__title {

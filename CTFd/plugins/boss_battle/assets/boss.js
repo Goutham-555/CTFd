@@ -223,22 +223,108 @@
 
     document.body.appendChild(widget);
 
-    var toggleBtn = document.getElementById("boss-widget-toggle");
+    var toggleBtn = widget.querySelector(".boss-widget__toggle");
+    var header = document.getElementById("boss-widget-toggle");
     var body = document.getElementById("boss-widget-body");
     var collapsed = false;
 
+    // Load collapsed state
     if (localStorage.getItem("boss-widget-collapsed") === "1") {
       body.classList.add("boss-widget__body--collapsed");
       collapsed = true;
-      widget.querySelector(".boss-widget__toggle").innerHTML = "&#9650;";
+      toggleBtn.innerHTML = "&#9650;";
     }
 
-    toggleBtn.addEventListener("click", function () {
+    // Toggle collapse on button click
+    toggleBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
       collapsed = !collapsed;
       body.classList.toggle("boss-widget__body--collapsed", collapsed);
-      widget.querySelector(".boss-widget__toggle").innerHTML = collapsed ? "&#9650;" : "&#9660;";
+      toggleBtn.innerHTML = collapsed ? "&#9650;" : "&#9660;";
       localStorage.setItem("boss-widget-collapsed", collapsed ? "1" : "0");
     });
+
+    // -----------------------------------------------------------------------
+    // Draggable Mechanics (Mouse & Touch)
+    // -----------------------------------------------------------------------
+    var isDragging = false;
+    var hasMoved = false;
+    var startX, startY, initialLeft, initialTop;
+
+    // Restore saved position if exists
+    var savedPos = localStorage.getItem("boss-widget-position");
+    if (savedPos) {
+      try {
+        var pos = JSON.parse(savedPos);
+        widget.style.left = pos.x + "px";
+        widget.style.top = pos.y + "px";
+        widget.style.right = "auto";
+        widget.style.bottom = "auto";
+      } catch (_e) {}
+    }
+
+    function onPointerDown(e) {
+      // Don't drag if clicking buttons or links
+      if (e.target.closest(".boss-widget__toggle") || e.target.closest("a")) return;
+
+      isDragging = true;
+      hasMoved = false;
+      var clientX = e.clientX || (e.touches && e.touches[0].clientX);
+      var clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+      var rect = widget.getBoundingClientRect();
+      initialLeft = rect.left;
+      initialTop = rect.top;
+      startX = clientX;
+      startY = clientY;
+
+      widget.classList.add("boss-widget--dragging");
+      document.addEventListener("mousemove", onPointerMove);
+      document.addEventListener("mouseup", onPointerUp);
+      document.addEventListener("touchmove", onPointerMove, { passive: false });
+      document.addEventListener("touchend", onPointerUp);
+    }
+
+    function onPointerMove(e) {
+      if (!isDragging) return;
+      var clientX = e.clientX || (e.touches && e.touches[0].clientX);
+      var clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+      var deltaX = clientX - startX;
+      var deltaY = clientY - startY;
+
+      if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
+        hasMoved = true;
+      }
+
+      var newLeft = Math.max(10, Math.min(window.innerWidth - widget.offsetWidth - 10, initialLeft + deltaX));
+      var newTop = Math.max(10, Math.min(window.innerHeight - widget.offsetHeight - 10, initialTop + deltaY));
+
+      widget.style.left = newLeft + "px";
+      widget.style.top = newTop + "px";
+      widget.style.right = "auto";
+      widget.style.bottom = "auto";
+
+      if (e.cancelable) e.preventDefault();
+    }
+
+    function onPointerUp() {
+      if (!isDragging) return;
+      isDragging = false;
+      widget.classList.remove("boss-widget--dragging");
+
+      document.removeEventListener("mousemove", onPointerMove);
+      document.removeEventListener("mouseup", onPointerUp);
+      document.removeEventListener("touchmove", onPointerMove);
+      document.removeEventListener("touchend", onPointerUp);
+
+      // Save custom coordinates
+      var rect = widget.getBoundingClientRect();
+      localStorage.setItem("boss-widget-position", JSON.stringify({ x: rect.left, y: rect.top }));
+    }
+
+    header.addEventListener("mousedown", onPointerDown);
+    header.addEventListener("touchstart", onPointerDown, { passive: true });
   }
 
   function updateWidget() {

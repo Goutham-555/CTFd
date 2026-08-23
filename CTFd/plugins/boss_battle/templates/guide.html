@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      
+      {# --- Hero Banner --- #}
+      <div class="p-5 mb-4 bg-dark text-white rounded-3 shadow-lg border border-secondary text-center position-relative overflow-hidden" 
+           style="background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);">
+        <h1 class="display-4 fw-bold mb-3 text-warning">🛡️ Welcome to the CTF & Boss Battle</h1>
+        <p class="lead text-muted mb-4">
+          Solve challenges, gain points for your team, and work together with everyone to defeat the Global Boss!
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+          <a href="/challenges" class="btn btn-primary btn-lg px-4 shadow">⚔️ Go to Challenges</a>
+          <a href="/boss" class="btn btn-outline-warning btn-lg px-4 shadow">👑 View Boss Arena</a>
+        </div>
+      </div>
+
+      {# --- Guidelines / Rules Section --- #}
+      <div class="row g-4 mb-4">
+        
+        <div class="col-md-6">
+          <div class="card h-100 bg-dark text-light border-secondary shadow-sm">
+            <div class="card-body">
+              <h4 class="card-title text-info mb-3">📜 Club Rules & Code of Conduct</h4>
+              <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+                <li>🔹 <strong>Fair Play:</strong> Do not share flags, hints, or solutions with other teams.</li>
+                <li>🔹 <strong>Infrastructure:</strong> Do not perform denial-of-service (DoS) or attack platform infrastructure.</li>
+                <li>🔹 <strong>Flag Format:</strong> Flags are formatted as <code>CTF{...}</code> unless specified otherwise in the challenge description.</li>
+                <li>🔹 <strong>Need Help?</strong> Reach out to club organizers / mentors on Discord or the support desk.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card h-100 bg-dark text-light border-secondary shadow-sm">
+            <div class="card-body">
+              <h4 class="card-title text-danger mb-3">👾 How the Boss Battle Works</h4>
+              <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+                <li>💥 <strong>Solves Deal Damage:</strong> Every successful challenge solve deals damage directly to the global boss!</li>
+                <li>🔄 <strong>3 Progressive Phases:</strong> Deplete each phase's HP to unlock new animations and harder boss stages.</li>
+                <li>📊 <strong>Live Widget:</strong> Watch the boss HP bar update live on any page via the bottom-right widget.</li>
+                <li>🏆 <strong>Last Hit Attribution:</strong> Solve strategically to land the finishing blow on each phase!</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {# --- Getting Started Steps --- #}
+      <div class="card bg-dark text-light border-secondary shadow-sm mb-4">
+        <div class="card-body">
+          <h4 class="card-title text-success mb-3">🚀 Getting Started in 3 Simple Steps</h4>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="p-3 border border-secondary rounded bg-opacity-10 bg-white h-100">
+                <h5 class="text-warning">1. Pick a Challenge</h5>
+                <p class="small text-muted mb-0">Navigate to the Challenges tab and choose any category (Web, Crypto, Reverse, Forensics, Pwn).</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 border border-secondary rounded bg-opacity-10 bg-white h-100">
+                <h5 class="text-warning">2. Find the Flag</h5>
+                <p class="small text-muted mb-0">Analyze the clues, exploit the target, decode the cipher, and recover the flag.</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 border border-secondary rounded bg-opacity-10 bg-white h-100">
+                <h5 class="text-warning">3. Submit & Strike!</h5>
+                <p class="small text-muted mb-0">Submit the flag to earn points for your scoreboard rank and deal damage to the boss simultaneously.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -34,6 +34,15 @@ def boss_page():
     )
 
 
+@boss_battle_bp.route("/")
+@boss_battle_bp.route("/guide")
+def guide_page():
+    """
+    Renders the Club Guide homepage.
+    """
+    return render_template("plugins/boss_battle/templates/guide.html")
+
+
 def load(app):
     """
     CTFd plugin entry point.
@@ -41,7 +50,18 @@ def load(app):
     # 1. Run database migrations for the boss_state table
     upgrade(plugin_name="boss_battle")
 
-    # 2. Register page blueprint (/boss)
+    # 2. Override default static_html route so '/' always serves the Club Guide
+    original_static_html = app.view_functions.get("views.static_html")
+    def custom_static_html(route="index"):
+        if route in ("index", "", "guide"):
+            return render_template("plugins/boss_battle/templates/guide.html")
+        if original_static_html:
+            return original_static_html(route)
+        return render_template("plugins/boss_battle/templates/guide.html")
+
+    app.view_functions["views.static_html"] = custom_static_html
+
+    # 3. Register page blueprint (/boss)
     app.register_blueprint(boss_battle_bp)
 
     # 3. Register API blueprint (/api/boss/state, /api/boss/damage, /api/boss/reset)
@@ -53,6 +73,7 @@ def load(app):
     )
 
     # 5. Register navbar menu item
+    register_user_page_menu_bar("Guide", "/guide")
     register_user_page_menu_bar("Boss Battle", "/boss")
 
     # 6. Inject CSS and JS globally for widget and arena support
