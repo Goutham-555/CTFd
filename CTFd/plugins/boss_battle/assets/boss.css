@@ -1,26 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 /* ==========================================================================
-   Boss Battle Plugin — Styles
-   Two components:
-   1. .boss-arena    — Full /boss page
-   2. .boss-widget   — Persistent mini-widget on all pages
+   Boss Battle Plugin — Styles (RETRO 8-BIT EDITION)
    ========================================================================== */
 
-/* --------------------------------------------------------------------------
-   CSS Custom Properties — Phase-specific theme colors from design docs
-   Phase 1: Red/Dark   Phase 2: Purple   Phase 3: Gold
-   -------------------------------------------------------------------------- */
 :root {
   --boss-phase1-color: #c0392b;
-  --boss-phase1-glow: rgba(192, 57, 43, 0.4);
   --boss-phase2-color: #8e44ad;
-  --boss-phase2-glow: rgba(142, 68, 173, 0.4);
   --boss-phase3-color: #d4a017;
-  --boss-phase3-glow: rgba(212, 160, 23, 0.4);
-  --boss-bg-dark: #1a1a2e;
-  --boss-bg-card: #16213e;
-  --boss-text: #e0e0e0;
-  --boss-text-muted: #888;
-  --boss-hp-bg: #2d2d2d;
+  --boss-bg-dark: #000000;
+  --boss-bg-card: #111111;
+  --boss-text: #ffffff;
+  --boss-text-muted: #888888;
+  --boss-hp-bg: #222222;
+  --retro-font: 'Press Start 2P', monospace, sans-serif;
 }
 
 /* ==========================================================================
@@ -32,41 +25,42 @@
   margin: 0 auto;
   padding: 2rem 1rem;
   color: var(--boss-text);
+  font-family: var(--retro-font);
+  text-transform: uppercase;
 }
 
 /* Phase title bar */
 .boss-arena__header {
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .boss-arena__phase-label {
-  font-size: 0.85rem;
-  text-transform: uppercase;
+  font-size: 0.7rem;
   letter-spacing: 2px;
   color: var(--boss-text-muted);
-  margin-bottom: 0.25rem;
+  margin-bottom: 1rem;
 }
 
 .boss-arena__name {
-  font-size: 1.8rem;
-  font-weight: 700;
+  font-size: 1.2rem;
+  line-height: 1.6;
   margin: 0;
+  text-shadow: 2px 2px 0 #000;
 }
 
-/* Boss sprite container */
+/* Boss sprite container - Retro TV/Screen style */
 .boss-arena__sprite-container {
   position: relative;
   width: 256px;
   height: 256px;
-  margin: 1.5rem auto;
-  border-radius: 8px;
-  overflow: hidden;
+  margin: 2rem auto;
   background: var(--boss-bg-dark);
-  border: 2px solid #333;
+  border: 4px solid #ffffff;
+  box-shadow: 8px 8px 0px #000000;
+  overflow: hidden;
 }
 
-/* Sprite sheet element — positioned inside the container */
 .boss-arena__sprite-sheet {
   width: 256px;
   height: 256px;
@@ -77,14 +71,6 @@
   left: 0;
 }
 
-.boss-arena__sprite {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  image-rendering: pixelated;
-}
-
-/* Placeholder when no sprite is loaded */
 .boss-arena__sprite-placeholder {
   width: 100%;
   height: 100%;
@@ -93,29 +79,21 @@
   justify-content: center;
   font-size: 4rem;
   color: #444;
-  transition: font-size 0.2s;
+  font-family: sans-serif;
 }
 
-/* Screen shake effect — applied to the container on heavy hits */
 .boss-arena__sprite-container--shake {
   animation: boss-screen-shake 0.3s ease-out;
 }
 
 @keyframes boss-screen-shake {
   0%   { transform: translate(0, 0); }
-  10%  { transform: translate(-4px, 2px); }
-  20%  { transform: translate(4px, -2px); }
-  30%  { transform: translate(-3px, -3px); }
-  40%  { transform: translate(3px, 3px); }
-  50%  { transform: translate(-2px, 1px); }
-  60%  { transform: translate(2px, -1px); }
-  70%  { transform: translate(-1px, 2px); }
-  80%  { transform: translate(1px, -1px); }
-  90%  { transform: translate(-1px, 0); }
+  25%  { transform: translate(-6px, 4px); }
+  50%  { transform: translate(6px, -4px); }
+  75%  { transform: translate(-4px, -4px); }
   100% { transform: translate(0, 0); }
 }
 
-/* Phase transition cutscene overlay — white flash + fade */
 .boss-arena__transition-overlay {
   position: absolute;
   top: 0;
@@ -126,7 +104,6 @@
   opacity: 0;
   pointer-events: none;
   z-index: 10;
-  border-radius: 8px;
 }
 
 .boss-arena__transition-overlay--active {
@@ -140,98 +117,76 @@
   100% { opacity: 0; }
 }
 
-/* Animation state label */
 .boss-arena__state-label {
   text-align: center;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
   color: var(--boss-text-muted);
-  margin-top: 0.5rem;
+  margin-top: 1rem;
 }
 
-/* HP Bar */
+/* Retro HP Bar */
 .boss-arena__hp-section {
-  margin: 1.5rem 0;
+  margin: 2rem 0;
 }
 
 .boss-arena__hp-header {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 0.4rem;
-  font-size: 0.9rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.7rem;
 }
 
 .boss-arena__hp-label {
-  font-weight: 600;
+  font-weight: normal;
 }
 
 .boss-arena__hp-numbers {
-  font-family: monospace;
-  color: var(--boss-text-muted);
+  color: #fff;
 }
 
 .boss-hp-bar {
   width: 100%;
-  height: 24px;
+  height: 32px;
   background: var(--boss-hp-bg);
-  border-radius: 4px;
-  overflow: hidden;
+  border: 4px solid #ffffff;
+  box-shadow: 4px 4px 0px #000000;
   position: relative;
 }
 
 .boss-hp-bar__fill {
   height: 100%;
-  border-radius: 4px;
-  transition: width 0.6s ease-in-out, background-color 0.3s;
+  transition: width 0.2s steps(10), background-color 0.3s;
   position: relative;
 }
 
-/* HP bar shimmer effect */
-.boss-hp-bar__fill::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 50%;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.15),
-    transparent
-  );
-  border-radius: 4px 4px 0 0;
-}
-
-/* Phase dots */
+/* Phase dots - Retro squares */
 .boss-arena__phases {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
-  margin: 1.5rem 0;
+  gap: 2rem;
+  margin: 2rem 0;
 }
 
 .boss-arena__phase-dot {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.8rem;
 }
 
 .boss-arena__phase-dot-circle {
   width: 16px;
   height: 16px;
-  border-radius: 50%;
-  border: 2px solid #555;
+  border: 4px solid #555;
   background: transparent;
-  transition: all 0.3s;
 }
 
 .boss-arena__phase-dot-circle--active {
   border-color: currentColor;
   background: currentColor;
-  box-shadow: 0 0 8px currentColor;
+  box-shadow: 4px 4px 0px #000;
 }
 
 .boss-arena__phase-dot-circle--completed {
@@ -240,26 +195,22 @@
 }
 
 .boss-arena__phase-dot-label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-size: 0.5rem;
   color: var(--boss-text-muted);
 }
 
-/* Hit flash overlay */
 .boss-arena__sprite-container--hit {
-  animation: boss-hit-flash 0.15s ease-out 2;
+  animation: boss-hit-flash 0.1s steps(2) 3;
 }
 
 @keyframes boss-hit-flash {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(2.5) saturate(0); }
-  100% { filter: brightness(1); }
+  0% { filter: invert(0); }
+  50% { filter: invert(1); }
+  100% { filter: invert(0); }
 }
 
-/* Defeated pulse */
 .boss-arena__sprite-container--defeated {
-  animation: boss-defeated 1.5s ease-in-out forwards;
+  animation: boss-defeated 1.5s steps(5) forwards;
 }
 
 @keyframes boss-defeated {
@@ -268,36 +219,33 @@
   100% { opacity: 0.2; filter: grayscale(1); }
 }
 
-/* Phase transition glow */
 .boss-arena__sprite-container--transition {
-  animation: boss-phase-transition 2s ease-in-out;
+  animation: boss-phase-transition 2s steps(10);
 }
 
 @keyframes boss-phase-transition {
-  0% { filter: brightness(1); box-shadow: none; }
-  30% { filter: brightness(3); box-shadow: 0 0 30px rgba(255, 255, 255, 0.8); }
-  60% { filter: brightness(3); box-shadow: 0 0 30px rgba(255, 255, 255, 0.8); }
-  100% { filter: brightness(1); box-shadow: none; }
+  0% { filter: brightness(1); }
+  50% { filter: brightness(2); }
+  100% { filter: brightness(1); }
 }
 
 /* ==========================================================================
    2. MINI WIDGET — .boss-widget
-   Persistent bottom-right corner widget visible on all pages.
    ========================================================================== */
 
 .boss-widget {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 280px;
+  width: 320px;
   background: var(--boss-bg-card);
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 12px;
+  border: 4px solid #ffffff;
+  padding: 16px;
   color: var(--boss-text);
   z-index: 1050;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  font-size: 0.85rem;
+  box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.8);
+  font-family: var(--retro-font);
+  text-transform: uppercase;
   transition: opacity 0.3s;
   user-select: none;
 }
@@ -305,22 +253,20 @@
 .boss-widget--dragging {
   opacity: 0.9;
   cursor: grabbing !important;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+  box-shadow: 12px 12px 0px rgba(0, 0, 0, 1);
   transition: none !important;
 }
 
 .boss-widget--hidden {
   opacity: 0;
-  transform: translateY(20px);
   pointer-events: none;
 }
 
-/* Widget header with boss name and collapse toggle */
 .boss-widget__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   cursor: grab;
 }
 
@@ -329,34 +275,31 @@
 }
 
 .boss-widget__title {
-  font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.65rem;
+  line-height: 1.4;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 6px;
 }
 
 .boss-widget__phase {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-size: 0.5rem;
   color: var(--boss-text-muted);
 }
 
 .boss-widget__toggle {
   background: none;
   border: none;
-  color: var(--boss-text-muted);
+  color: #fff;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.7rem;
   padding: 0 4px;
-  line-height: 1;
 }
 
-/* Widget body — collapsible */
 .boss-widget__body {
   overflow: hidden;
-  transition: max-height 0.3s ease;
+  transition: max-height 0.2s steps(5);
   max-height: 200px;
 }
 
@@ -364,58 +307,65 @@
   max-height: 0;
 }
 
-/* Widget HP bar — smaller version */
 .boss-widget .boss-hp-bar {
-  height: 14px;
-  margin-bottom: 6px;
+  height: 20px;
+  border: 3px solid #fff;
+  box-shadow: 3px 3px 0px #000;
+  margin-bottom: 12px;
+  background: #222;
 }
 
 .boss-widget__hp-text {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
-  color: var(--boss-text-muted);
-  font-family: monospace;
+  font-size: 0.55rem;
+  color: #fff;
 }
 
 .boss-widget__link {
   display: block;
   text-align: center;
-  margin-top: 8px;
-  font-size: 0.75rem;
-  color: var(--boss-phase1-color);
+  margin-top: 16px;
+  font-size: 0.6rem;
+  color: #fff;
   text-decoration: none;
+  border: 2px solid transparent;
+  padding: 8px;
 }
 
 .boss-widget__link:hover {
-  text-decoration: underline;
+  text-decoration: none;
+  border: 2px dashed #fff;
+  background: #333;
 }
 
-/* Don't show the widget on the /boss page itself */
 body.boss-page-active .boss-widget {
   display: none;
 }
 
 /* --------------------------------------------------------------------------
-   Phase color application — set via data-phase attribute
+   Phase color application
    -------------------------------------------------------------------------- */
 [data-boss-phase="1"] .boss-hp-bar__fill { background: var(--boss-phase1-color); }
 [data-boss-phase="1"] .boss-arena__name { color: var(--boss-phase1-color); }
 [data-boss-phase="1"] .boss-arena__phase-dot-circle--active { color: var(--boss-phase1-color); }
 [data-boss-phase="1"] .boss-widget__title { color: var(--boss-phase1-color); }
-[data-boss-phase="1"] .boss-widget__link { color: var(--boss-phase1-color); }
 [data-boss-phase="1"] .boss-arena__sprite-container { border-color: var(--boss-phase1-color); }
+[data-boss-phase="1"] .boss-widget { border-color: var(--boss-phase1-color); }
+[data-boss-phase="1"] .boss-widget__link:hover { border-color: var(--boss-phase1-color); }
 
 [data-boss-phase="2"] .boss-hp-bar__fill { background: var(--boss-phase2-color); }
 [data-boss-phase="2"] .boss-arena__name { color: var(--boss-phase2-color); }
 [data-boss-phase="2"] .boss-arena__phase-dot-circle--active { color: var(--boss-phase2-color); }
 [data-boss-phase="2"] .boss-widget__title { color: var(--boss-phase2-color); }
-[data-boss-phase="2"] .boss-widget__link { color: var(--boss-phase2-color); }
 [data-boss-phase="2"] .boss-arena__sprite-container { border-color: var(--boss-phase2-color); }
+[data-boss-phase="2"] .boss-widget { border-color: var(--boss-phase2-color); }
+[data-boss-phase="2"] .boss-widget__link:hover { border-color: var(--boss-phase2-color); }
 
 [data-boss-phase="3"] .boss-hp-bar__fill { background: var(--boss-phase3-color); }
 [data-boss-phase="3"] .boss-arena__name { color: var(--boss-phase3-color); }
 [data-boss-phase="3"] .boss-arena__phase-dot-circle--active { color: var(--boss-phase3-color); }
 [data-boss-phase="3"] .boss-widget__title { color: var(--boss-phase3-color); }
-[data-boss-phase="3"] .boss-widget__link { color: var(--boss-phase3-color); }
 [data-boss-phase="3"] .boss-arena__sprite-container { border-color: var(--boss-phase3-color); }
+[data-boss-phase="3"] .boss-widget { border-color: var(--boss-phase3-color); }
+[data-boss-phase="3"] .boss-widget__link:hover { border-color: var(--boss-phase3-color); }
