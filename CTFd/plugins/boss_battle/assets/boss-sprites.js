@@ -150,7 +150,8 @@
       self.usePlaceholder = false;
       self._startLoop();
     };
-    testImg.onerror = function () {
+    testImg.onerror = function (e) {
+      fetch('/api/v1/challenges', {method: 'GET', headers: {'X-Error-Log': 'Failed to load: ' + sheetUrl}});
       // Sheet doesn't exist — show CSS placeholder animation instead
       self.usePlaceholder = true;
       self.spriteEl.style.backgroundImage = "none";
@@ -263,7 +264,8 @@
   window.BossSpriteAnimator = {
     SpriteAnimator: SpriteAnimator,
     ANIM_MANIFEST: ANIM_MANIFEST,
-    FRAME_SIZE: FRAME_SIZE,
+    FRAME_WIDTH: FRAME_WIDTH,
+    FRAME_HEIGHT: FRAME_HEIGHT,
     BASE_PATH: BASE_PATH,
   };
 })();
