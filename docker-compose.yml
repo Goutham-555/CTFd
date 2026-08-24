@@ -9,6 +9,7 @@ services:
       - DATABASE_URL=mysql+pymysql://ctfd:ctfd@db/ctfd
       - REDIS_URL=redis://cache:6379
       - WORKERS=9
+      - SECRET_KEY=b29d107a6598c1ef494c2e68f3a8b417e34d6c57f9208b04a91f582c30b201a3
       - LOG_FOLDER=/var/log/CTFd
       - ACCESS_LOG=-
       - ERROR_LOG=-

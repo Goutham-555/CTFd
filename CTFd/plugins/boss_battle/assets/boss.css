@@ -52,8 +52,8 @@
 /* Boss sprite container - Retro TV/Screen style */
 .boss-arena__sprite-container {
   position: relative;
-  width: 256px;
-  height: 256px;
+  width: 344px;
+  height: 384px;
   margin: 2rem auto;
   background: var(--boss-bg-dark);
   border: 4px solid #ffffff;
@@ -62,8 +62,8 @@
 }
 
 .boss-arena__sprite-sheet {
-  width: 256px;
-  height: 256px;
+  width: 344px;
+  height: 384px;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   position: absolute;

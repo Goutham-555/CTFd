@@ -19,7 +19,8 @@
 (function () {
   "use strict";
 
-  var FRAME_SIZE = 256; // pixels, both width and height
+  var FRAME_WIDTH = 344;
+  var FRAME_HEIGHT = 384;
   var BASE_PATH = "/plugins/boss_battle/assets/sprites/";
 
   // =========================================================================
@@ -30,25 +31,25 @@
   // =========================================================================
   var ANIM_MANIFEST = {
     1: {
-      idle:             { frames: 8,  fps: 10, sheet: "phase1_idle.png",   loop: true },
-      hit:              { frames: 4,  fps: 12, sheet: "phase1_idle.png",   loop: false },
-      attack:           { frames: 8,  fps: 12, sheet: "phase1_attack.png", loop: false },
-      phase_transition: { frames: 8,  fps: 6,  sheet: "phase1_idle.png",   loop: false },
-      defeated:         { frames: 8,  fps: 4,  sheet: "phase1_idle.png",   loop: false },
+      idle:             { frames: 8,  fps: 10, sheet: "phase1_idle_v2.png",   loop: true },
+      hit:              { frames: 4,  fps: 12, sheet: "phase1_idle_v2.png",   loop: false },
+      attack:           { frames: 8,  fps: 12, sheet: "phase1_attack_v2.png", loop: false },
+      phase_transition: { frames: 8,  fps: 6,  sheet: "phase1_idle_v2.png",   loop: false },
+      defeated:         { frames: 8,  fps: 4,  sheet: "phase1_idle_v2.png",   loop: false },
     },
     2: {
-      idle:             { frames: 10, fps: 10, sheet: "phase2_idle.png",   loop: true },
-      hit:              { frames: 4,  fps: 12, sheet: "phase2_idle.png",   loop: false },
-      attack:           { frames: 8,  fps: 12, sheet: "phase2_attack.png", loop: false },
-      phase_transition: { frames: 10, fps: 6,  sheet: "phase2_idle.png",   loop: false },
-      defeated:         { frames: 10, fps: 4,  sheet: "phase2_idle.png",   loop: false },
+      idle:             { frames: 8, fps: 10, sheet: "phase2_idle_v2.png",   loop: true },
+      hit:              { frames: 4,  fps: 12, sheet: "phase2_idle_v2.png",   loop: false },
+      attack:           { frames: 8,  fps: 12, sheet: "phase2_attack_v2.png", loop: false },
+      phase_transition: { frames: 8, fps: 6,  sheet: "phase2_idle_v2.png",   loop: false },
+      defeated:         { frames: 8, fps: 4,  sheet: "phase2_idle_v2.png",   loop: false },
     },
     3: {
-      idle:             { frames: 10, fps: 10, sheet: "phase3_idle.png",   loop: true },
-      hit:              { frames: 4,  fps: 12, sheet: "phase3_idle.png",   loop: false },
-      attack:           { frames: 8,  fps: 12, sheet: "phase3_attack.png", loop: false },
-      phase_transition: { frames: 10, fps: 6,  sheet: "phase3_idle.png",   loop: false },
-      defeated:         { frames: 10, fps: 4,  sheet: "phase3_idle.png",   loop: false },
+      idle:             { frames: 8, fps: 10, sheet: "phase3_idle_v2.png",   loop: true },
+      hit:              { frames: 4,  fps: 12, sheet: "phase3_idle_v2.png",   loop: false },
+      attack:           { frames: 8,  fps: 12, sheet: "phase3_attack_v2.png", loop: false },
+      phase_transition: { frames: 8, fps: 6,  sheet: "phase3_idle_v2.png",   loop: false },
+      defeated:         { frames: 8, fps: 4,  sheet: "phase3_idle_v2.png",   loop: false },
     },
   };
 
@@ -135,10 +136,10 @@
     // Set sprite sheet as background image
     var sheetUrl = BASE_PATH + anim.sheet;
     this.spriteEl.style.backgroundImage = "url('" + sheetUrl + "')";
-    this.spriteEl.style.backgroundSize = (this.frameCount * FRAME_SIZE) + "px " + FRAME_SIZE + "px";
+    this.spriteEl.style.backgroundSize = (this.frameCount * FRAME_WIDTH) + "px " + FRAME_HEIGHT + "px";
     this.spriteEl.style.backgroundRepeat = "no-repeat";
-    this.spriteEl.style.width = FRAME_SIZE + "px";
-    this.spriteEl.style.height = FRAME_SIZE + "px";
+    this.spriteEl.style.width = FRAME_WIDTH + "px";
+    this.spriteEl.style.height = FRAME_HEIGHT + "px";
     this._showFrame(0);
 
     // Verify the image loads; fall back to placeholder if not found
@@ -164,7 +165,7 @@
    */
   SpriteAnimator.prototype._showFrame = function (index) {
     if (this.usePlaceholder) return;
-    var offsetX = -(index * FRAME_SIZE);
+    var offsetX = -(index * FRAME_WIDTH);
     this.spriteEl.style.backgroundPosition = offsetX + "px 0px";
   };
 
