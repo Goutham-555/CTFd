@@ -90,25 +90,22 @@
    * Plays the hit reaction animation with screen shake.
    */
   function playHitAnimation(phase) {
+    var container = document.querySelector(".boss-arena__sprite-container");
+    if (container) {
+      // Visual flash effect on the boss element
+      container.classList.add("boss-arena__sprite-container--flash");
+      setTimeout(function () {
+        container.classList.remove("boss-arena__sprite-container--flash");
+      }, 150);
+    }
+
     if (!spriteAnimator) {
-      // Fallback: use CSS class-based animations
+      // Fallback
       setTimeout(function () {
         bossState.animationState = "idle";
         updateArena();
       }, 350);
       return;
-    }
-
-    // Screen shake effect
-    var container = document.querySelector(".boss-arena__sprite-container");
-    if (container) {
-      container.classList.remove("boss-arena__sprite-container--shake");
-      // Force reflow to restart CSS animation
-      void container.offsetWidth;
-      container.classList.add("boss-arena__sprite-container--shake");
-      setTimeout(function () {
-        container.classList.remove("boss-arena__sprite-container--shake");
-      }, 350);
     }
 
     // Play hit sprite animation, then return to idle

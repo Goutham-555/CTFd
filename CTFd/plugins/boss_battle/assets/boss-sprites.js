@@ -136,7 +136,7 @@
     // Set sprite sheet as background image
     var sheetUrl = BASE_PATH + anim.sheet;
     this.spriteEl.style.backgroundImage = "url('" + sheetUrl + "')";
-    this.spriteEl.style.backgroundSize = (this.frameCount * FRAME_WIDTH) + "px " + FRAME_HEIGHT + "px";
+    this.spriteEl.style.backgroundSize = "auto 100%";
     this.spriteEl.style.backgroundRepeat = "no-repeat";
     this.spriteEl.style.width = FRAME_WIDTH + "px";
     this.spriteEl.style.height = FRAME_HEIGHT + "px";
