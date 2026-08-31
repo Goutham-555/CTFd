@@ -46,6 +46,36 @@ def calculate_phase(current_hp: int, max_hp: int) -> int:
         return 3
 
 
+class BossCombatLog(db.Model):
+    """
+    SQLAlchemy model storing individual boss hit logs, first bloods, and phase breaks.
+    """
+    __tablename__ = "boss_combat_log"
+
+    id = db.Column(db.Integer, primary_key=True)
+    challenge_id = db.Column(db.Integer, nullable=True)
+    challenge_name = db.Column(db.String(120), nullable=True)
+    solver_name = db.Column(db.String(80), nullable=False)
+    damage_dealt = db.Column(db.Integer, default=0, nullable=False)
+    is_first_blood = db.Column(db.Boolean, default=False, nullable=False)
+    is_phase_transition = db.Column(db.Boolean, default=False, nullable=False)
+    phase = db.Column(db.Integer, default=1, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "challenge_id": self.challenge_id,
+            "challenge_name": self.challenge_name or "Unknown Challenge",
+            "solver_name": self.solver_name,
+            "damage_dealt": self.damage_dealt,
+            "is_first_blood": self.is_first_blood,
+            "is_phase_transition": self.is_phase_transition,
+            "phase": self.phase,
+            "timestamp": self.timestamp.strftime("%H:%M:%S") if self.timestamp else "",
+        }
+
+
 class BossState(db.Model):
     """
     SQLAlchemy model storing the global community Boss state.
@@ -85,10 +115,17 @@ class BossState(db.Model):
             db.session.commit()
         return record
 
-    def apply_damage(self, amount: int, solver_name: str = None) -> dict:
+    def apply_damage(
+        self,
+        amount: int,
+        solver_name: str = None,
+        challenge_id: int = None,
+        challenge_name: str = None,
+        is_first_blood: bool = False,
+    ) -> dict:
         """
         Applies damage to the boss, handles phase transitions and defeat states.
-        Returns a summary dictionary of what occurred.
+        Records a combat log entry.
         """
         if not self.is_active or self.state == "defeated" or self.current_hp <= 0:
             return {
@@ -102,7 +139,7 @@ class BossState(db.Model):
 
         amount = max(0, int(amount))
         self.total_damage += amount
-        self.last_hit_by = solver_name
+        self.last_hit_by = solver_name or "Anonymous"
         self.last_hit_at = datetime.datetime.utcnow()
 
         old_phase = self.phase
@@ -128,6 +165,19 @@ class BossState(db.Model):
             self.state = "defeated"
             defeated_occurred = True
 
+        # Record combat log entry
+        log_entry = BossCombatLog(
+            challenge_id=challenge_id,
+            challenge_name=challenge_name,
+            solver_name=self.last_hit_by,
+            damage_dealt=amount,
+            is_first_blood=is_first_blood,
+            is_phase_transition=transition_occurred,
+            phase=self.phase,
+            timestamp=datetime.datetime.utcnow(),
+        )
+        db.session.add(log_entry)
+
         db.session.commit()
         clear_boss_state_cache()
 
@@ -139,6 +189,7 @@ class BossState(db.Model):
             "current_hp": self.current_hp,
             "max_hp": self.max_hp,
             "state": self.state,
+            "is_first_blood": is_first_blood,
         }
 
     def set_hp(self, current_hp: int = None, max_hp: int = None) -> dict:
@@ -169,7 +220,7 @@ class BossState(db.Model):
 
     def reset_boss(self):
         """
-        Resets the boss to Phase 1 full health.
+        Resets the boss to Phase 1 full health and clears combat logs.
         """
         phase_1 = PHASE_CONFIG[1]
         self.phase = 1
@@ -180,6 +231,13 @@ class BossState(db.Model):
         self.last_hit_by = None
         self.last_hit_at = None
         self.is_active = True
+        
+        # Clear combat logs on full reset
+        try:
+            BossCombatLog.query.delete()
+        except Exception:
+            pass
+
         db.session.commit()
         clear_boss_state_cache()
 
@@ -193,6 +251,41 @@ class BossState(db.Model):
             return data
 
         hp_percent = ((self.current_hp / self.max_hp) * 100) if self.max_hp > 0 else 0
+
+        # Retrieve recent 10 combat logs
+        try:
+            recent_logs = [
+                log.to_dict()
+                for log in BossCombatLog.query.order_by(BossCombatLog.id.desc()).limit(10).all()
+            ]
+        except Exception:
+            recent_logs = []
+
+        # Retrieve Top 5 Slayers
+        try:
+            from sqlalchemy import func
+            top_query = (
+                db.session.query(
+                    BossCombatLog.solver_name,
+                    func.sum(BossCombatLog.damage_dealt).label("total_damage"),
+                    func.sum(db.case((BossCombatLog.is_first_blood == True, 1), else_=0)).label("first_bloods")
+                )
+                .group_by(BossCombatLog.solver_name)
+                .order_by(func.sum(BossCombatLog.damage_dealt).desc())
+                .limit(5)
+                .all()
+            )
+            top_slayers = [
+                {
+                    "rank": idx + 1,
+                    "name": row[0],
+                    "total_damage": int(row[1] or 0),
+                    "first_bloods": int(row[2] or 0),
+                }
+                for idx, row in enumerate(top_query)
+            ]
+        except Exception:
+            top_slayers = []
 
         data = {
             "id": self.id,
@@ -208,6 +301,8 @@ class BossState(db.Model):
             "last_hit_by": self.last_hit_by,
             "last_hit_at": self.last_hit_at.isoformat() if self.last_hit_at else None,
             "is_active": self.is_active,
+            "recent_combat_log": recent_logs,
+            "top_slayers": top_slayers,
         }
 
         # Cache for 10 seconds. Invalidation happens on damage / admin updates.

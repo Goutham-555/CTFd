@@ -47,8 +47,9 @@ def load(app):
     """
     CTFd plugin entry point.
     """
-    # 1. Run database migrations for the boss_state table
+    # 1. Run database migrations and ensure all plugin tables exist
     upgrade(plugin_name="boss_battle")
+    app.db.create_all()
 
     # 2. Override default static_html route so '/' always serves the Club Guide
     original_static_html = app.view_functions.get("views.static_html")
@@ -64,7 +65,7 @@ def load(app):
     # 3. Register page blueprint (/boss)
     app.register_blueprint(boss_battle_bp)
 
-    # 3. Register API blueprint (/api/boss/state, /api/boss/damage, /api/boss/reset)
+    # 3. Register API blueprint (/api/boss/state, /api/boss/damage, /api/boss/reset, /api/boss/hp)
     app.register_blueprint(boss_api_bp)
 
     # 4. Serve static assets (CSS, JS, sprite assets)
@@ -78,11 +79,11 @@ def load(app):
 
     # 6. Inject CSS and JS globally for widget and arena support
     # boss-sprites.js must load BEFORE boss.js (SpriteAnimator dependency)
-    register_plugin_stylesheet("/plugins/boss_battle/assets/boss.css?v=8")
-    register_plugin_script("/plugins/boss_battle/assets/boss-sprites.js?v=8")
-    register_plugin_script("/plugins/boss_battle/assets/boss.js?v=8")
+    register_plugin_stylesheet("/plugins/boss_battle/assets/boss.css?v=9")
+    register_plugin_script("/plugins/boss_battle/assets/boss-sprites.js?v=9")
+    register_plugin_script("/plugins/boss_battle/assets/boss.js?v=9")
 
-    # 7. Hook into challenge solves to apply boss damage
+    # 7. Hook into challenge solves to apply boss damage & award First Bloods
     # We use before_request to ensure all other plugins (including challenge types)
     # have finished loading their classes into CHALLENGE_CLASSES.
     wrapper_applied = False
@@ -103,12 +104,28 @@ def load(app):
                     # 1. Call the original solve method (which saves the solve to the DB)
                     result = orig.__func__(cls, user, team, challenge, request)
                     
-                    # 2. Apply damage to the boss
-                    damage = challenge.value or 0
-                    if damage > 0:
+                    # 2. Check if this is First Blood on the challenge
+                    from CTFd.models import Solves
+                    try:
+                        solve_count = Solves.query.filter_by(challenge_id=challenge.id).count()
+                        is_first_blood = (solve_count == 1)
+                    except Exception:
+                        is_first_blood = False
+
+                    # 3. Apply damage with 1.5x First Blood bonus!
+                    base_damage = challenge.value or 0
+                    if base_damage > 0:
+                        damage = int(base_damage * 1.5) if is_first_blood else base_damage
+                        solver_name = team.name if team else (user.name if user else "Anonymous")
                         boss = BossState.get_or_create()
                         if boss.is_active and boss.current_hp > 0:
-                            boss.apply_damage(damage, user.name)
+                            boss.apply_damage(
+                                amount=damage,
+                                solver_name=solver_name,
+                                challenge_id=challenge.id,
+                                challenge_name=challenge.name if hasattr(challenge, 'name') else None,
+                                is_first_blood=is_first_blood,
+                            )
                             
                     return result
                 return solve_wrapper

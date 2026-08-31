@@ -34,6 +34,8 @@
   var pollingInterval = null;
   var spriteAnimator = null; // SpriteAnimator instance for the /boss page
 
+  var lastSeenLogId = 0;
+
   /**
    * Hydrates state from a data object (from server template or API)
    */
@@ -51,6 +53,17 @@
     bossState.bossName = data.name || (BOSS_PHASES[bossState.currentPhase] ? BOSS_PHASES[bossState.currentPhase].name : "");
     bossState.phaseTitle = "Phase " + bossState.currentPhase;
     bossState.lastHitBy = data.last_hit_by || null;
+    bossState.recentLogs = data.recent_combat_log || [];
+    bossState.topSlayers = data.top_slayers || [];
+
+    // Check for newly arrived First Blood events to pop up the banner
+    if (bossState.recentLogs && bossState.recentLogs.length > 0) {
+      var latestLog = bossState.recentLogs[0];
+      if (lastSeenLogId > 0 && latestLog.id > lastSeenLogId && latestLog.is_first_blood) {
+        showFirstBloodBanner(latestLog.solver_name, latestLog.damage_dealt);
+      }
+      lastSeenLogId = Math.max(lastSeenLogId, latestLog.id);
+    }
 
     // Synchronize Admin Inputs if user is not actively typing
     var curInput = document.getElementById("admin-current-hp");
@@ -416,6 +429,88 @@
         spriteContainer.classList.add("boss-arena__sprite-container--transition");
       }
     }
+
+    if (bossState.recentLogs) {
+      updateCombatLog(bossState.recentLogs);
+    }
+    if (bossState.topSlayers) {
+      updateTopSlayers(bossState.topSlayers);
+    }
+  }
+
+  function showFirstBloodBanner(teamName, damage) {
+    var banner = document.getElementById("boss-first-blood-banner");
+    var teamEl = document.getElementById("boss-first-blood-team");
+    if (!banner || !teamEl) return;
+
+    teamEl.textContent = (teamName || "Team") + (damage ? " (+" + formatHp(damage) + " CRIT!)" : "");
+    banner.classList.remove("boss-first-blood-banner--active");
+    void banner.offsetWidth;
+    banner.classList.add("boss-first-blood-banner--active");
+    setTimeout(function () {
+      banner.classList.remove("boss-first-blood-banner--active");
+    }, 4500);
+  }
+
+  function updateCombatLog(logs) {
+    var container = document.getElementById("boss-combat-log-container");
+    if (!container) return;
+
+    if (!logs || logs.length === 0) {
+      container.innerHTML = '<div class="text-muted small text-center py-3">No strikes recorded yet. Solve challenges to strike the boss!</div>';
+      return;
+    }
+
+    var html = '<div class="boss-combat-log-list">';
+    logs.forEach(function (log) {
+      var fbBadge = log.is_first_blood
+        ? '<span class="badge bg-danger text-light me-1" style="font-size:0.6rem; letter-spacing:0.5px;">🩸 1.5x CRIT</span>'
+        : '';
+      var ptBadge = log.is_phase_transition
+        ? '<span class="badge bg-warning text-dark me-1" style="font-size:0.6rem;">⚡ PHASE BREAKER</span>'
+        : '';
+
+      html +=
+        '<div class="boss-combat-log-item d-flex justify-content-between align-items-center py-1 border-bottom border-secondary">' +
+          '<div class="text-truncate me-2">' +
+            '<span class="text-muted me-1 font-monospace" style="font-size:0.65rem;">[' + escapeHtml(log.timestamp) + ']</span>' +
+            fbBadge +
+            ptBadge +
+            '<strong class="text-light">' + escapeHtml(log.solver_name) + '</strong>' +
+            '<span class="text-muted"> solved </span>' +
+            '<span class="text-info font-italic">"' + escapeHtml(log.challenge_name) + '"</span>' +
+          '</div>' +
+          '<div class="text-danger font-weight-bold text-nowrap font-monospace" style="font-size:0.75rem;">' +
+            '-' + formatHp(log.damage_dealt) + ' DMG' +
+          '</div>' +
+        '</div>';
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  function updateTopSlayers(slayers) {
+    var tbody = document.getElementById("boss-top-slayers-tbody");
+    if (!tbody) return;
+
+    if (!slayers || slayers.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-2">No damage leaders yet.</td></tr>';
+      return;
+    }
+
+    var rankIcons = ["🥇", "🥈", "🥉", "4", "5"];
+    var html = "";
+    slayers.forEach(function (s, idx) {
+      var rankBadge = rankIcons[idx] || (idx + 1);
+      html +=
+        '<tr>' +
+          '<td class="font-weight-bold">' + rankBadge + '</td>' +
+          '<td class="text-truncate text-light font-weight-bold" style="max-width: 120px;">' + escapeHtml(s.name) + '</td>' +
+          '<td class="text-end text-danger font-monospace">' + formatHp(s.total_damage) + '</td>' +
+          '<td class="text-center text-danger font-weight-bold">' + (s.first_bloods > 0 ? ('🩸' + s.first_bloods) : '-') + '</td>' +
+        '</tr>';
+    });
+    tbody.innerHTML = html;
   }
 
   function triggerHit() {

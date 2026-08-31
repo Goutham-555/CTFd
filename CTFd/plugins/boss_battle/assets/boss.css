@@ -369,3 +369,82 @@ body.boss-page-active .boss-widget {
 [data-boss-phase="3"] .boss-arena__sprite-container { border-color: var(--boss-phase3-color); }
 [data-boss-phase="3"] .boss-widget { border-color: var(--boss-phase3-color); }
 [data-boss-phase="3"] .boss-widget__link:hover { border-color: var(--boss-phase3-color); }
+
+/* --------------------------------------------------------------------------
+   First Blood Banner Popup
+   -------------------------------------------------------------------------- */
+.boss-first-blood-banner {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  z-index: 9999;
+  background: #111;
+  border: 4px solid #e74c3c;
+  box-shadow: 6px 6px 0px #000000, 0 0 20px rgba(231, 76, 60, 0.6);
+  padding: 12px 24px;
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+}
+
+.boss-first-blood-banner--active {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.boss-first-blood-banner__content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Press Start 2P', monospace;
+  text-transform: uppercase;
+}
+
+.boss-first-blood-banner__icon {
+  font-size: 1.5rem;
+  animation: boss-pulse 1s infinite alternate;
+}
+
+.boss-first-blood-banner__text {
+  color: #e74c3c;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
+.boss-first-blood-banner__team {
+  color: #f1c40f;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+@keyframes boss-pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.2); }
+}
+
+/* --------------------------------------------------------------------------
+   Live Battle Activity Feed
+   -------------------------------------------------------------------------- */
+.boss-combat-log-container {
+  max-height: 220px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #555 #222;
+}
+
+.boss-combat-log-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.boss-combat-log-container::-webkit-scrollbar-thumb {
+  background: #555;
+}
+
+.boss-combat-log-item {
+  transition: background-color 0.2s ease;
+}
+
+.boss-combat-log-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}

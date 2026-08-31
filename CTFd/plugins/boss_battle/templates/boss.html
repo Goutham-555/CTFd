@@ -47,9 +47,60 @@
   </div>
   {% endif %}
 
+  {# --- First Blood Banner Notification Popup --- #}
+  <div class="boss-first-blood-banner" id="boss-first-blood-banner">
+    <div class="boss-first-blood-banner__content">
+      <span class="boss-first-blood-banner__icon">🩸</span>
+      <span class="boss-first-blood-banner__text">CRITICAL FIRST BLOOD!</span>
+      <span class="boss-first-blood-banner__team" id="boss-first-blood-team">Team</span>
+    </div>
+  </div>
+
+  {# --- Two-Column Stats Row: Live Battle Feed & Top Slayers Podium --- #}
+  <div class="row mt-4 g-3">
+    {# Live Combat Activity Feed #}
+    <div class="col-md-7">
+      <div class="card bg-dark border-secondary p-3 h-100 shadow-sm">
+        <h6 class="text-uppercase text-warning font-weight-bold d-flex justify-content-between align-items-center mb-2" style="letter-spacing: 1px;">
+          <span>📜 Live Battle Activity</span>
+          <span class="badge bg-danger text-light font-weight-normal" style="font-size: 0.65rem;">REAL-TIME</span>
+        </h6>
+        <div class="boss-combat-log-container" id="boss-combat-log-container">
+          <div class="text-muted small text-center py-3" id="boss-combat-log-empty">No strikes recorded yet. Solve challenges to strike the boss!</div>
+        </div>
+      </div>
+    </div>
+
+    {# Top Boss Slayers MVP Podium #}
+    <div class="col-md-5">
+      <div class="card bg-dark border-secondary p-3 h-100 shadow-sm">
+        <h6 class="text-uppercase text-info font-weight-bold mb-2" style="letter-spacing: 1px;">
+          🏆 Top Boss Slayers (MVP)
+        </h6>
+        <div class="table-responsive">
+          <table class="table table-sm table-dark table-striped mb-0 small" style="font-size: 0.75rem;">
+            <thead>
+              <tr class="text-muted">
+                <th>#</th>
+                <th>Team</th>
+                <th class="text-end">Damage</th>
+                <th class="text-center">🩸</th>
+              </tr>
+            </thead>
+            <tbody id="boss-top-slayers-tbody">
+              <tr>
+                <td colspan="4" class="text-center text-muted py-2">No damage leaders yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
   {# --- Admin Interactive Control Panel --- #}
   {% if is_admin() %}
-  <div class="card bg-dark border-secondary mt-5 p-3 text-center" id="boss-admin-panel">
+  <div class="card bg-dark border-secondary mt-4 p-3 text-center" id="boss-admin-panel">
     <h6 class="text-uppercase text-danger font-weight-bold" style="letter-spacing: 1.5px;">⚡ Real-Time Admin Boss Controls ⚡</h6>
     <p class="small text-muted mb-2">Phase 1 (>70%) &bull; Phase 2 (70% - 30%) &bull; Phase 3 (&le;30%)</p>
 
