@@ -14,17 +14,17 @@
   // CONSTANTS & INITIAL STATE
   // =========================================================================
   const BOSS_PHASES = {
-    1: { name: "Starscourged General", maxHp: 15000, color: "#c0392b" },
-    2: { name: "Gravity Lord",         maxHp: 10500, color: "#8e44ad" },
-    3: { name: "Promised Consort",     maxHp: 15000, color: "#d4a017" },
+    1: { name: "Starscourged General", threshold: 0.70, color: "#c0392b" },
+    2: { name: "Gravity Lord",         threshold: 0.30, color: "#8e44ad" },
+    3: { name: "Promised Consort",     threshold: 0.00, color: "#d4a017" },
   };
 
   var bossState = {
     currentPhase: 1,
-    currentHp: 15000,
-    maxHp: 15000,
-    totalMaxHp: 40500,
-    totalCurrentHp: 40500,
+    currentHp: 50000,
+    maxHp: 50000,
+    totalMaxHp: 50000,
+    totalCurrentHp: 50000,
     animationState: "idle", // idle | hit | attack | phase_transition | defeated
     bossName: "Starscourged General",
     phaseTitle: "Phase 1",
@@ -46,11 +46,21 @@
     bossState.currentPhase = data.phase || 1;
     bossState.currentHp = typeof data.current_hp === "number" ? data.current_hp : bossState.currentHp;
     bossState.maxHp = typeof data.max_hp === "number" ? data.max_hp : bossState.maxHp;
-    bossState.totalMaxHp = typeof data.total_max_hp === "number" ? data.total_max_hp : bossState.totalMaxHp;
-    bossState.totalCurrentHp = typeof data.total_current_hp === "number" ? data.total_current_hp : bossState.totalCurrentHp;
+    bossState.totalMaxHp = typeof data.total_max_hp === "number" ? data.total_max_hp : bossState.maxHp;
+    bossState.totalCurrentHp = typeof data.total_current_hp === "number" ? data.total_current_hp : bossState.currentHp;
     bossState.bossName = data.name || (BOSS_PHASES[bossState.currentPhase] ? BOSS_PHASES[bossState.currentPhase].name : "");
     bossState.phaseTitle = "Phase " + bossState.currentPhase;
     bossState.lastHitBy = data.last_hit_by || null;
+
+    // Synchronize Admin Inputs if user is not actively typing
+    var curInput = document.getElementById("admin-current-hp");
+    if (curInput && document.activeElement !== curInput) {
+      curInput.value = bossState.currentHp;
+    }
+    var maxInput = document.getElementById("admin-max-hp");
+    if (maxInput && document.activeElement !== maxInput) {
+      maxInput.value = bossState.maxHp;
+    }
 
     // Detect live transitions or damage events during polling
     if (bossState.currentPhase > prevPhase) {
@@ -61,7 +71,7 @@
       // Damage detected
       bossState.animationState = "hit";
       playHitAnimation(bossState.currentPhase);
-    } else if (data.state === "defeated") {
+    } else if (data.state === "defeated" || bossState.currentHp <= 0) {
       bossState.animationState = "defeated";
       playDefeatedAnimation(bossState.currentPhase);
     } else if (data.state) {
@@ -457,11 +467,69 @@
     }
   });
 
-  // =========================================================================
-  // ADMIN INTERACTIVE CONTROLS
-  // =========================================================================
+  function adminSetHp(currentHp, maxHp) {
+    var payload = {};
+    if (currentHp !== undefined && currentHp !== null) payload.current_hp = currentHp;
+    if (maxHp !== undefined && maxHp !== null) payload.max_hp = maxHp;
+
+    fetch("/api/boss/hp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then(function (res) { return res.json(); })
+      .then(function (resJson) {
+        if (resJson && resJson.success && resJson.data) {
+          applyState(resJson.data);
+          if (spriteAnimator) {
+            spriteAnimator.idle(bossState.currentPhase);
+          }
+          updateArena();
+          updateWidget();
+        }
+      })
+      .catch(function (err) {
+        console.error("Failed to set boss HP:", err);
+      });
+  }
+
+  function adminSetHpInput() {
+    var el = document.getElementById("admin-current-hp");
+    if (!el) return;
+    var val = parseInt(el.value, 10);
+    if (!isNaN(val)) {
+      adminSetHp(val, null);
+    }
+  }
+
+  function adminSetMaxHpInput() {
+    var el = document.getElementById("admin-max-hp");
+    if (!el) return;
+    var val = parseInt(el.value, 10);
+    if (!isNaN(val)) {
+      adminSetHp(null, val);
+    }
+  }
+
+  function adminJumpPhase(targetPhase) {
+    var max = bossState.maxHp || 50000;
+    if (targetPhase === 1) {
+      adminSetHp(max, null);
+    } else if (targetPhase === 2) {
+      adminSetHp(Math.round(max * 0.70), null);
+    } else if (targetPhase === 3) {
+      adminSetHp(Math.round(max * 0.30), null);
+    }
+  }
 
   function adminDamage(amount) {
+    if (amount < 0) {
+      // Healing: increase HP
+      var newHp = Math.min(bossState.maxHp, bossState.currentHp - amount);
+      adminSetHp(newHp, null);
+      return;
+    }
+
     fetch("/api/boss/damage", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -514,6 +582,10 @@
     updateWidget: updateWidget,
     adminDamage: adminDamage,
     adminReset: adminReset,
+    adminSetHp: adminSetHp,
+    adminSetHpInput: adminSetHpInput,
+    adminSetMaxHpInput: adminSetMaxHpInput,
+    adminJumpPhase: adminJumpPhase,
   };
 
   // =========================================================================

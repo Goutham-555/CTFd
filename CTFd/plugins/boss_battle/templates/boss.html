@@ -49,13 +49,39 @@
 
   {# --- Admin Interactive Control Panel --- #}
   {% if is_admin() %}
-  <div class="card bg-dark border-secondary mt-5 p-3 text-center">
-    <h6 class="text-uppercase text-muted" style="letter-spacing: 1px;">Admin Boss Testing Controls</h6>
+  <div class="card bg-dark border-secondary mt-5 p-3 text-center" id="boss-admin-panel">
+    <h6 class="text-uppercase text-danger font-weight-bold" style="letter-spacing: 1.5px;">⚡ Real-Time Admin Boss Controls ⚡</h6>
+    <p class="small text-muted mb-2">Phase 1 (>70%) &bull; Phase 2 (70% - 30%) &bull; Phase 3 (&le;30%)</p>
+
+    {# Direct HP Input #}
+    <div class="row justify-content-center g-2 my-2">
+      <div class="col-auto d-flex align-items-center gap-2">
+        <label for="admin-current-hp" class="small text-muted mb-0">Current HP:</label>
+        <input type="number" id="admin-current-hp" class="form-control form-control-sm bg-dark text-light border-secondary" style="width: 130px;" value="{{ boss.current_hp }}">
+        <button class="btn btn-sm btn-primary" onclick="window.BossBattle.adminSetHpInput()">Set HP</button>
+      </div>
+      <div class="col-auto d-flex align-items-center gap-2">
+        <label for="admin-max-hp" class="small text-muted mb-0">Max HP:</label>
+        <input type="number" id="admin-max-hp" class="form-control form-control-sm bg-dark text-light border-secondary" style="width: 130px;" value="{{ boss.max_hp }}">
+        <button class="btn btn-sm btn-outline-primary" onclick="window.BossBattle.adminSetMaxHpInput()">Set Max</button>
+      </div>
+    </div>
+
+    {# Quick Phase Jumps #}
     <div class="d-flex flex-wrap justify-content-center gap-2 mt-2">
+      <button class="btn btn-sm btn-outline-info" onclick="window.BossBattle.adminJumpPhase(1)">Phase 1 (100%)</button>
+      <button class="btn btn-sm btn-outline-warning" onclick="window.BossBattle.adminJumpPhase(2)">Phase 2 (70%)</button>
+      <button class="btn btn-sm btn-outline-danger" onclick="window.BossBattle.adminJumpPhase(3)">Phase 3 (30%)</button>
+      <button class="btn btn-sm btn-danger" onclick="window.BossBattle.adminSetHp(0)">Defeat (0 HP)</button>
+    </div>
+
+    {# Quick Deltas #}
+    <div class="d-flex flex-wrap justify-content-center gap-2 mt-2">
+      <button class="btn btn-sm btn-outline-secondary" onclick="window.BossBattle.adminDamage(-5000)">+5,000 HP</button>
+      <button class="btn btn-sm btn-outline-secondary" onclick="window.BossBattle.adminDamage(-1000)">+1,000 HP</button>
       <button class="btn btn-sm btn-outline-danger" onclick="window.BossBattle.adminDamage(1000)">-1,000 HP</button>
       <button class="btn btn-sm btn-outline-danger" onclick="window.BossBattle.adminDamage(5000)">-5,000 HP</button>
-      <button class="btn btn-sm btn-outline-warning" onclick="window.BossBattle.adminDamage(15000)">Trigger Next Phase</button>
-      <button class="btn btn-sm btn-outline-info" onclick="window.BossBattle.adminReset()">Reset Boss</button>
+      <button class="btn btn-sm btn-outline-info" onclick="window.BossBattle.adminReset()">Full Reset</button>
     </div>
   </div>
   {% endif %}

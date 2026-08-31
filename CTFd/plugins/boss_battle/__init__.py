@@ -78,9 +78,9 @@ def load(app):
 
     # 6. Inject CSS and JS globally for widget and arena support
     # boss-sprites.js must load BEFORE boss.js (SpriteAnimator dependency)
-    register_plugin_stylesheet("/plugins/boss_battle/assets/boss.css?v=7")
-    register_plugin_script("/plugins/boss_battle/assets/boss-sprites.js?v=7")
-    register_plugin_script("/plugins/boss_battle/assets/boss.js?v=7")
+    register_plugin_stylesheet("/plugins/boss_battle/assets/boss.css?v=8")
+    register_plugin_script("/plugins/boss_battle/assets/boss-sprites.js?v=8")
+    register_plugin_script("/plugins/boss_battle/assets/boss.js?v=8")
 
     # 7. Hook into challenge solves to apply boss damage
     # We use before_request to ensure all other plugins (including challenge types)

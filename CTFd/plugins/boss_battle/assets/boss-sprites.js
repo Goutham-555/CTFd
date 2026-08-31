@@ -31,21 +31,21 @@
   // =========================================================================
   var ANIM_MANIFEST = {
     1: {
-      idle:             { frames: 1,  fps: 1,  sheet: "phase1_idle_v2.png",   loop: true },
+      idle:             { frames: 8,  fps: 8,  sheet: "phase1_idle_v2.png",   loop: true },
       hit:              { frames: 4,  fps: 12, sheet: "phase1_idle_v2.png",   loop: false },
       attack:           { frames: 8,  fps: 12, sheet: "phase1_attack_v2.png", loop: false },
       phase_transition: { frames: 8,  fps: 6,  sheet: "phase1_idle_v2.png",   loop: false },
       defeated:         { frames: 8,  fps: 4,  sheet: "phase1_idle_v2.png",   loop: false },
     },
     2: {
-      idle:             { frames: 1,  fps: 1,  sheet: "phase2_idle_v2.png",   loop: true },
+      idle:             { frames: 8,  fps: 8,  sheet: "phase2_idle_v2.png",   loop: true },
       hit:              { frames: 4,  fps: 12, sheet: "phase2_idle_v2.png",   loop: false },
       attack:           { frames: 8,  fps: 12, sheet: "phase2_attack_v2.png", loop: false },
       phase_transition: { frames: 8,  fps: 6,  sheet: "phase2_idle_v2.png",   loop: false },
       defeated:         { frames: 8,  fps: 4,  sheet: "phase2_idle_v2.png",   loop: false },
     },
     3: {
-      idle:             { frames: 1,  fps: 1,  sheet: "phase3_idle_v2.png",   loop: true },
+      idle:             { frames: 8,  fps: 8,  sheet: "phase3_idle_v2.png",   loop: true },
       hit:              { frames: 4,  fps: 12, sheet: "phase3_idle_v2.png",   loop: false },
       attack:           { frames: 8,  fps: 12, sheet: "phase3_attack_v2.png", loop: false },
       phase_transition: { frames: 8,  fps: 6,  sheet: "phase3_idle_v2.png",   loop: false },

@@ -73,3 +73,41 @@ def admin_reset_boss():
         "success": True,
         "data": boss.to_dict(),
     })
+
+
+@boss_api_bp.route("/hp", methods=["POST"])
+@admins_only
+@bypass_csrf_protection
+def admin_set_boss_hp():
+    """
+    POST /api/boss/hp
+    Admin endpoint to dynamically set current HP and/or max HP in real time.
+    Expected JSON: {"current_hp": 35000, "max_hp": 50000} (both optional, at least one required)
+    """
+    req_data = request.get_json() or request.form
+    current_hp = req_data.get("current_hp")
+    max_hp = req_data.get("max_hp")
+
+    if current_hp is None and max_hp is None:
+        return jsonify({
+            "success": False,
+            "errors": {"hp": ["Provide at least current_hp or max_hp."]},
+        }), 400
+
+    try:
+        current_hp_val = int(current_hp) if current_hp is not None else None
+        max_hp_val = int(max_hp) if max_hp is not None else None
+    except (ValueError, TypeError):
+        return jsonify({
+            "success": False,
+            "errors": {"hp": ["Invalid integer provided for current_hp or max_hp."]},
+        }), 400
+
+    boss = BossState.get_or_create()
+    updated_dict = boss.set_hp(current_hp=current_hp_val, max_hp=max_hp_val)
+
+    return jsonify({
+        "success": True,
+        "data": updated_dict,
+    })
+
